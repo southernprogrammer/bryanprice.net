@@ -3,8 +3,8 @@
 <head>
         <meta charset="utf-8" />
         <title>Bryan Price - Pycharm</title>
-        <link rel="stylesheet" href="http://bryanprice.net/theme/css/custom.css" />
-        <link href="http://bryanprice.net/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Bryan Price Atom Feed" />
+        <link rel="stylesheet" href="bryanprice.net/theme/css/custom.css" />
+        <link href="bryanprice.net/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Bryan Price Atom Feed" />
 
         <!--[if IE]>
             <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -13,29 +13,25 @@
 
 <body id="index" class="home">
         <header id="banner" class="body">
-                <h1><a href="http://bryanprice.net/">Bryan Price </a></h1>
+                <h1><a href="bryanprice.net/">Bryan Price </a></h1>
                 <nav><ul>
-    
-                        <li><a href="http://bryanprice.net/pages/about.html">About</a></li>
-    
-                        <li><a href="http://bryanprice.net/pages/coding-projects.html">Coding Projects</a></li>
                 </ul>
                 </nav>
 <div id="submenu">
                     <ul>
-                            <li><a href="http://bryanprice.net/category/blog.html">Blog</a></li>
-                            <li><a href="http://bryanprice.net/category/project-updates.html">Project Updates</a></li>
+                            <li><a href="bryanprice.net/category/blog.html">Blog</a></li>
+                            <li><a href="bryanprice.net/category/project-updates.html">Project Updates</a></li>
                     </ul>
                 <div>
         </header><!-- /#banner -->
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="http://bryanprice.net/pycharm-live-templates.html">PyCharm Live Templates</a></h1>
+                    <h1 class="entry-title"><a href="bryanprice.net/pycharm-live-templates.html">PyCharm Live Templates</a></h1>
 <footer class="post-info">
         <span>Sat 05 May 2018</span>
-	        <span>| in <a href="http://bryanprice.net/category/blog.html">Blog</a></span>
-<span>| tags: <a href="http://bryanprice.net/tag/pycharm.html">Pycharm</a></span>
+	        <span>| in <a href="bryanprice.net/category/blog.html">Blog</a></span>
+<span>| tags: <a href="bryanprice.net/tag/pycharm.html">Pycharm</a></span>
 </footer><!-- /.post-info --><p>So sometime last year I found myself writing a lot of repetitive code. First of all, I have to write python toolboxes for work.
 A python toolbox is a python file with the extension .pyt. It is used in ESRI's ArcMap and ArcCatalog programs.
 When writing a python toolbox file in PyCharm, it's best to start with a skeleton template because the toolbox must
@@ -52,7 +48,7 @@ Search for file types in the search bar in the upper left hand corner and add *.
 
 <span class="k">class</span> <span class="nc">Toolbox</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Define the toolbox (the name of the toolbox is the name of the</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Define the toolbox (the name of the toolbox is the name of the</span>
 <span class="sd">        .pyt file).&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Toolbox&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alias</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -63,33 +59,33 @@ Search for file types in the search bar in the upper left hand corner and add *.
 
 <span class="k">class</span> <span class="nc">Tool</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Define the tool (tool name is the name of the class).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Define the tool (tool name is the name of the class).&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Tool&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">canRunInBackground</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canRunInBackground</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">getParameterInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Define parameter definitions&quot;&quot;&quot;</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Define parameter definitions&quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">params</span>
 
     <span class="k">def</span> <span class="nf">isLicensed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set whether tool is licensed to execute.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">True</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set whether tool is licensed to execute.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">updateParameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Modify the values and properties of parameters before internal</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Modify the values and properties of parameters before internal</span>
 <span class="sd">        validation is performed.  This method is called whenever a parameter</span>
 <span class="sd">        has been changed.&quot;&quot;&quot;</span>
         <span class="k">return</span>
 
     <span class="k">def</span> <span class="nf">updateMessages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Modify the messages created by internal validation for each tool</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Modify the messages created by internal validation for each tool</span>
 <span class="sd">        parameter.  This method is called after internal validation.&quot;&quot;&quot;</span>
         <span class="k">return</span>
 
     <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">messages</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The source code of the tool.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The source code of the tool.&quot;&quot;&quot;</span>
         <span class="k">return</span>
 </pre></div>
 <p>Now you can create a new file and PythonToolbox is an option. When you create the new file it will have this text as
@@ -134,10 +130,12 @@ When you are first creating the template you will get a warning that there are n
 &lt;/template&gt;
 </pre>
 <p>Enjoy!</p>
-<p><a href="http://bryanprice.net/pycharm-live-templates.html#disqus_thread">comments</a></p>                </article>
-<p class="paginator">
-    Page 1 / 1
-</p>
+<p><a href="bryanprice.net/pycharm-live-templates.html#disqus_thread">comments</a></p>                </article>
+  <nav>
+    <ul>
+      <li>Page 1 / 1</li>
+    </ul>
+  </nav>
             </aside><!-- /#featured -->
             </ol><!-- /#posts-list -->
             </section><!-- /#content -->
@@ -151,7 +149,7 @@ When you are first creating the template you will get a warning that there are n
                 <div class="social">
                         <h2>social</h2>
                         <ul>
-                            <li><a href="http://bryanprice.net/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+                            <li><a href="bryanprice.net/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
 
                             <li><a href="http://twitter.com/southrnprogrmmr">Twitter</a></li>
                             <li><a href="https://github.com/southernprogrammer">Github</a></li>

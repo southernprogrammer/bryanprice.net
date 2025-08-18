@@ -3,8 +3,8 @@
 <head>
         <meta charset="utf-8" />
         <title>Bryan Price - Java</title>
-        <link rel="stylesheet" href="http://bryanprice.net/theme/css/custom.css" />
-        <link href="http://bryanprice.net/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Bryan Price Atom Feed" />
+        <link rel="stylesheet" href="bryanprice.net/theme/css/custom.css" />
+        <link href="bryanprice.net/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Bryan Price Atom Feed" />
 
         <!--[if IE]>
             <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -13,29 +13,25 @@
 
 <body id="index" class="home">
         <header id="banner" class="body">
-                <h1><a href="http://bryanprice.net/">Bryan Price </a></h1>
+                <h1><a href="bryanprice.net/">Bryan Price </a></h1>
                 <nav><ul>
-    
-                        <li><a href="http://bryanprice.net/pages/about.html">About</a></li>
-    
-                        <li><a href="http://bryanprice.net/pages/coding-projects.html">Coding Projects</a></li>
                 </ul>
                 </nav>
 <div id="submenu">
                     <ul>
-                            <li><a href="http://bryanprice.net/category/blog.html">Blog</a></li>
-                            <li><a href="http://bryanprice.net/category/project-updates.html">Project Updates</a></li>
+                            <li><a href="bryanprice.net/category/blog.html">Blog</a></li>
+                            <li><a href="bryanprice.net/category/project-updates.html">Project Updates</a></li>
                     </ul>
                 <div>
         </header><!-- /#banner -->
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="http://bryanprice.net/mono-zeroconf-on-windows.html">Mono Zeroconf on Windows</a></h1>
+                    <h1 class="entry-title"><a href="bryanprice.net/mono-zeroconf-on-windows.html">Mono Zeroconf on Windows</a></h1>
 <footer class="post-info">
         <span>Sat 29 January 2011</span>
-	        <span>| in <a href="http://bryanprice.net/category/project-updates.html">Project Updates</a></span>
-<span>| tags: <a href="http://bryanprice.net/tag/net.html">.NET</a><a href="http://bryanprice.net/tag/apple.html">Apple</a><a href="http://bryanprice.net/tag/bonjour.html">Bonjour</a><a href="http://bryanprice.net/tag/ccs.html">CCS</a><a href="http://bryanprice.net/tag/java.html">Java</a><a href="http://bryanprice.net/tag/mono.html">Mono</a><a href="http://bryanprice.net/tag/windows.html">Windows</a><a href="http://bryanprice.net/tag/zeroconf.html">Zeroconf</a></span>
+	        <span>| in <a href="bryanprice.net/category/project-updates.html">Project Updates</a></span>
+<span>| tags: <a href="bryanprice.net/tag/net.html">.NET</a><a href="bryanprice.net/tag/apple.html">Apple</a><a href="bryanprice.net/tag/bonjour.html">Bonjour</a><a href="bryanprice.net/tag/ccs.html">CCS</a><a href="bryanprice.net/tag/java.html">Java</a><a href="bryanprice.net/tag/mono.html">Mono</a><a href="bryanprice.net/tag/windows.html">Windows</a><a href="bryanprice.net/tag/zeroconf.html">Zeroconf</a></span>
 </footer><!-- /.post-info --><p>If you know anything about my classroom control system that I built, you
 know that the project requires Bonjour.&nbsp; This is the technology Apple
 uses to help you share your music on a network.&nbsp; Computers discover one
@@ -63,21 +59,23 @@ suggested on
 <a class="reference external" href="http://stackoverflow.com/questions/599846/how-to-register-a-service-with-mono-zeroconf">this</a>
 StackOverflow post.&nbsp; You’ll need to change the <strong>UPort</strong> Setter in
 <strong>Service.cs</strong> file (in the Bonjour Provider Project) to be:</p>
-<div class="highlight"><pre><span></span><span class="k">this</span><span class="o">.</span><span class="na">port</span><span class="o">=(</span><span class="n">ushort</span><span class="o">)</span><span class="n">IPAddress</span><span class="o">.</span><span class="na">HostToNetworkOrder</span><span class="o">((</span><span class="kt">short</span><span class="o">)</span> <span class="n">value</span><span class="o">);</span>
+<div class="highlight"><pre><span></span><span class="k">this</span><span class="p">.</span><span class="na">port</span><span class="o">=</span><span class="p">(</span><span class="n">ushort</span><span class="p">)</span><span class="n">IPAddress</span><span class="p">.</span><span class="na">HostToNetworkOrder</span><span class="p">((</span><span class="kt">short</span><span class="p">)</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
 </pre></div>
 <p>Next you’ll need to change the <strong>OnResolveReply</strong> method in the
 <strong>BrowseService.cs</strong> file (again in the Bonjour Provider Project).</p>
 <p>You’ll need to change the second if statement from</p>
-<div class="highlight"><pre><span></span><span class="k">if</span> <span class="o">(</span><span class="n">AddressProtocol</span> <span class="o">==</span> <span class="n">AddressProtocol</span><span class="o">.</span><span class="na">Any</span> <span class="o">||</span>
-    <span class="n">AddressProtocol</span> <span class="o">==</span> <span class="n">AddressProtocol</span><span class="o">.</span><span class="na">IPv6</span><span class="o">)</span>
+<div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">AddressProtocol</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">AddressProtocol</span><span class="p">.</span><span class="na">Any</span><span class="w"> </span><span class="o">||</span>
+<span class="w">    </span><span class="n">AddressProtocol</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">AddressProtocol</span><span class="p">.</span><span class="na">IPv6</span><span class="p">)</span>
 </pre></div>
 <p>to</p>
-<div class="highlight"><pre><span></span><span class="k">if</span> <span class="o">(</span><span class="n">AddressProtocol</span> <span class="o">==</span> <span class="n">AddressProtocol</span><span class="o">.</span><span class="na">IPv6</span><span class="o">)</span>
+<div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">AddressProtocol</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">AddressProtocol</span><span class="p">.</span><span class="na">IPv6</span><span class="p">)</span>
 </pre></div>
-<p><a href="http://bryanprice.net/mono-zeroconf-on-windows.html#disqus_thread">comments</a></p>                </article>
-<p class="paginator">
-    Page 1 / 1
-</p>
+<p><a href="bryanprice.net/mono-zeroconf-on-windows.html#disqus_thread">comments</a></p>                </article>
+  <nav>
+    <ul>
+      <li>Page 1 / 1</li>
+    </ul>
+  </nav>
             </aside><!-- /#featured -->
             </ol><!-- /#posts-list -->
             </section><!-- /#content -->
@@ -91,7 +89,7 @@ StackOverflow post.&nbsp; You’ll need to change the <strong>UPort</strong> Set
                 <div class="social">
                         <h2>social</h2>
                         <ul>
-                            <li><a href="http://bryanprice.net/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+                            <li><a href="bryanprice.net/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
 
                             <li><a href="http://twitter.com/southrnprogrmmr">Twitter</a></li>
                             <li><a href="https://github.com/southernprogrammer">Github</a></li>

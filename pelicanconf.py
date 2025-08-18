@@ -33,7 +33,7 @@ DEFAULT_PAGINATION = 10
 #RELATIVE_URLS = True
 
 PLUGIN_PATHS = ['../pelican-plugins']
-PLUGINS = ['pelican_youtube']
+PLUGINS = ['youtube']
 
 # Theme Variables
 
