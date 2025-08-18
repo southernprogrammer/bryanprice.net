@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Price - Project Updates</title><link href="http://bryanprice.net/" rel="alternate"></link><link href="http://bryanprice.net/feeds/project-updates.atom.xml" rel="self"></link><id>http://bryanprice.net/</id><updated>2011-01-29T10:04:00-06:00</updated><entry><title>Mono Zeroconf on Windows</title><link href="http://bryanprice.net/mono-zeroconf-on-windows.html" rel="alternate"></link><published>2011-01-29T10:04:00-06:00</published><updated>2011-01-29T10:04:00-06:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2011-01-29:/mono-zeroconf-on-windows.html</id><summary type="html">&lt;p&gt;If you know anything about my classroom control system that I built, you
+know that the project requires Bonjour.&amp;nbsp; This is the technology Apple
+uses to help you share your music on a network.&amp;nbsp; Computers discover one
+another by publishing their address on a multicast port.&amp;nbsp; Because the
+port is …&lt;/p&gt;</summary><content type="html">&lt;p&gt;If you know anything about my classroom control system that I built, you
+know that the project requires Bonjour.&amp;nbsp; This is the technology Apple
+uses to help you share your music on a network.&amp;nbsp; Computers discover one
+another by publishing their address on a multicast port.&amp;nbsp; Because the
+port is multicast the information gets sent to all computers on the
+network (you must have a multicast router).&amp;nbsp; I used a library in java
+called Bonaha that abstracted away a lot of the complexities of Apple’s
+Bonjour SDK.&lt;/p&gt;
+&lt;p&gt;I wanted a way to do the same thing in .NET because, well frankly I’d
+like to make my classroom control system a more cohesive piece of
+software and not the kludge that it is (in 2 different languages Java
+and .NET and pieced together with Elmer’s Glue©).&lt;/p&gt;
+&lt;p&gt;The obvious choice to keep up with the network state is Mono.Zeroconf.
+It’s a project that’s separate from the main Mono repository itself.&amp;nbsp; I
+expected this software to work out of the gate.&amp;nbsp; It may work fine on
+Linux using the Avahi provider; but with the Bonjour Provider on Windows
+I had to do some modifications of the source to get it to run.&amp;nbsp; Luckily
+there were others online that had already found the problems for me (but
+the forum posts were in 2 different places and a little difficult to
+find.), so for your convenience I am combining those bits of information
+in this blog post.&lt;/p&gt;
+&lt;p&gt;First you’ll need to do as
+&lt;a class="reference external" href="http://stackoverflow.com/users/313673/frankenspank"&gt;Frankenspank&lt;/a&gt;
+suggested on
+&lt;a class="reference external" href="http://stackoverflow.com/questions/599846/how-to-register-a-service-with-mono-zeroconf"&gt;this&lt;/a&gt;
+StackOverflow post.&amp;nbsp; You’ll need to change the &lt;strong&gt;UPort&lt;/strong&gt; Setter in
+&lt;strong&gt;Service.cs&lt;/strong&gt; file (in the Bonjour Provider Project) to be:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;port&lt;/span&gt;&lt;span class="o"&gt;=(&lt;/span&gt;&lt;span class="n"&gt;ushort&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="n"&gt;IPAddress&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;HostToNetworkOrder&lt;/span&gt;&lt;span class="o"&gt;((&lt;/span&gt;&lt;span class="kt"&gt;short&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="n"&gt;value&lt;/span&gt;&lt;span class="o"&gt;);&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Next you’ll need to change the &lt;strong&gt;OnResolveReply&lt;/strong&gt; method in the
+&lt;strong&gt;BrowseService.cs&lt;/strong&gt; file (again in the Bonjour Provider Project).&lt;/p&gt;
+&lt;p&gt;You’ll need to change the second if statement from&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="n"&gt;AddressProtocol&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;AddressProtocol&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;Any&lt;/span&gt; &lt;span class="o"&gt;||&lt;/span&gt;
+    &lt;span class="n"&gt;AddressProtocol&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;AddressProtocol&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;IPv6&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;to&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="n"&gt;AddressProtocol&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;AddressProtocol&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;IPv6&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+</content><category term=".NET"></category><category term="Apple"></category><category term="Bonjour"></category><category term="CCS"></category><category term="Java"></category><category term="Mono"></category><category term="Windows"></category><category term="Zeroconf"></category></entry><entry><title>CCS Update</title><link href="http://bryanprice.net/ccs-update.html" rel="alternate"></link><published>2009-08-19T13:52:00-05:00</published><updated>2009-08-19T13:52:00-05:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2009-08-19:/ccs-update.html</id><summary type="html">&lt;p&gt;You can now download the new CCS Software that should work for XP –
+Windows 7 via &lt;a class="reference external" href="https://github.com/southernprogrammer/ccs/releases/tag/1.0"&gt;github&lt;/a&gt; Enjoy.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;You can now download the new CCS Software that should work for XP –
+Windows 7 via &lt;a class="reference external" href="https://github.com/southernprogrammer/ccs/releases/tag/1.0"&gt;github&lt;/a&gt; Enjoy.&lt;/p&gt;
+</content><category term="CCS"></category></entry><entry><title>What is CCS?</title><link href="http://bryanprice.net/what-is-ccs.html" rel="alternate"></link><published>2009-08-19T13:35:00-05:00</published><updated>2009-08-19T13:35:00-05:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2009-08-19:/what-is-ccs.html</id><summary type="html">&lt;p&gt;You may have heard about CCS in my blog post
+&lt;a class="reference external" href="/ccs.html"&gt;here&lt;/a&gt;, but here’s a brief description anyway.
+CCS allows teachers to block websites and programs on student computers
+(both blacklists and whitelists) as well as perform other actions such
+as remote desktop.&amp;nbsp; The teacher and student software can be …&lt;/p&gt;</summary><content type="html">&lt;p&gt;You may have heard about CCS in my blog post
+&lt;a class="reference external" href="/ccs.html"&gt;here&lt;/a&gt;, but here’s a brief description anyway.
+CCS allows teachers to block websites and programs on student computers
+(both blacklists and whitelists) as well as perform other actions such
+as remote desktop.&amp;nbsp; The teacher and student software can be found
+&lt;a class="reference external" href="https://github.com/southernprogrammer/ccs"&gt;here&lt;/a&gt;.
+The teacher software must be setup first. Then setup the student software on all student machines
+using the same configuration.&lt;/p&gt;
+</content><category term="CCS"></category></entry><entry><title>CCS FAQ</title><link href="http://bryanprice.net/faq.html" rel="alternate"></link><published>2009-08-19T13:03:00-05:00</published><updated>2009-08-19T13:03:00-05:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2009-08-19:/faq.html</id><summary type="html">&lt;div class="section" id="what-operating-systems-are-supported"&gt;
+&lt;h2&gt;What operating systems are supported?&lt;/h2&gt;
+&lt;p&gt;Windows XP - Windows 7.&amp;nbsp; This software is untested on 64 bit OS's.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="are-there-any-prerequisites"&gt;
+&lt;h2&gt;Are there any prerequisites?&lt;/h2&gt;
+&lt;p&gt;.Net Framework 3.5, Java Runtime Environment, and Bonjour.&amp;nbsp; Links are
+provided in the readme and the installer.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="is-ccs-secure"&gt;
+&lt;h2&gt;Is CCS secure?&lt;/h2&gt;
+&lt;p&gt;Yes, CCS is in face very secure.&amp;nbsp; Commands …&lt;/p&gt;&lt;/div&gt;</summary><content type="html">&lt;div class="section" id="what-operating-systems-are-supported"&gt;
+&lt;h2&gt;What operating systems are supported?&lt;/h2&gt;
+&lt;p&gt;Windows XP - Windows 7.&amp;nbsp; This software is untested on 64 bit OS's.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="are-there-any-prerequisites"&gt;
+&lt;h2&gt;Are there any prerequisites?&lt;/h2&gt;
+&lt;p&gt;.Net Framework 3.5, Java Runtime Environment, and Bonjour.&amp;nbsp; Links are
+provided in the readme and the installer.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="is-ccs-secure"&gt;
+&lt;h2&gt;Is CCS secure?&lt;/h2&gt;
+&lt;p&gt;Yes, CCS is in face very secure.&amp;nbsp; Commands sent to student machines are
+validated via RSA encryption so that the student machine is positive
+that the source of the command is legitimate.&amp;nbsp; Additionally, students
+cannot turn off the software (unless you give them administrative
+privileges).&amp;nbsp; If a student kills one of the processes that runs as a
+regular user, another process will respawn it.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="do-the-machines-need-to-be-set-up-any-special-way"&gt;
+&lt;h2&gt;Do the machines need to be set up any special way?&lt;/h2&gt;
+&lt;p&gt;Yes, the teacher software should run on an administrative account and
+the student software should run on a limited or standard account.
+Furthermore Fast User Switching is not supported at this time and should
+be cut off.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="are-there-any-known-issues"&gt;
+&lt;h2&gt;Are there any known issues?&lt;/h2&gt;
+&lt;p&gt;Yes, installing from network shares seems to cause some problems.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="anything-else-i-need-to-know"&gt;
+&lt;h2&gt;Anything else I need to know?&lt;/h2&gt;
+&lt;p&gt;The CCSSUService (which runs as an administrator) does not start all
+software required to run on the student's machine.&amp;nbsp; It will, however,
+stop all of the software when it shuts down.&amp;nbsp; So when you log into the
+administrator's account on a student machine, you can stop the service
+to stop the software.&lt;/p&gt;
+&lt;/div&gt;
+</content><category term="CCS"></category></entry><entry><title>CCS</title><link href="http://bryanprice.net/ccs.html" rel="alternate"></link><published>2009-07-31T18:24:00-05:00</published><updated>2009-07-31T18:24:00-05:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2009-07-31:/ccs.html</id><summary type="html">&lt;p&gt;So, I've been working on my open source Classroom Control System this
+month, and I've just started to write the installers.&amp;nbsp; If you are
+familiar with NetOp's School6 software, you know how powerful a
+classroom control system can be.&lt;/p&gt;
+&lt;p&gt;My classroom control system will allow teachers to see what student …&lt;/p&gt;</summary><content type="html">&lt;p&gt;So, I've been working on my open source Classroom Control System this
+month, and I've just started to write the installers.&amp;nbsp; If you are
+familiar with NetOp's School6 software, you know how powerful a
+classroom control system can be.&lt;/p&gt;
+&lt;p&gt;My classroom control system will allow teachers to see what student
+computers are on and apply actions to any of them.&amp;nbsp; Teachers can
+rearrange the internal frames that represent the student computers and
+save the layout as he / she sees fit (useful to easily tell what
+computer you are controlling).&amp;nbsp; The teacher can remote control a
+student's computer via the CCS's interface.&amp;nbsp; That particular function
+uses the free program RealVNC.&amp;nbsp; Just think if the teacher's computer is
+hooked to a projector.&amp;nbsp; The teacher can ask a student to perform a task
+for the class, or they can answer the question that the student had for
+the class.&amp;nbsp; If the room doesn't have a projector, the teacher can simply
+use the Broadcast Screen function to broadcast his / her screen to any
+or all of the student computers.&lt;/p&gt;
+&lt;p&gt;But there's more.&amp;nbsp; The teacher can set a whitelist or blacklist for both
+programs and websites and save the policies under his / her particular
+profile.&amp;nbsp; You can also do things like Turn Off Monitor, Turn Off
+Machine, Empty Recycle Bin, Mute Volume, Unmute Volume, and set an open
+lab.&lt;/p&gt;
+&lt;p&gt;I'll make sure to put up a link when I'm finally done.&lt;/p&gt;
+</content><category term="CCS"></category></entry><entry><title>My CCS Project Interface Working!!!</title><link href="http://bryanprice.net/my-ccs-project-interface-working.html" rel="alternate"></link><published>2009-06-25T21:16:00-05:00</published><updated>2009-06-25T21:16:00-05:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2009-06-25:/my-ccs-project-interface-working.html</id><summary type="html">&lt;div class="youtube youtube-16x9"&gt;&lt;iframe src="https://www.youtube.com/embed/FwrZyPHnbrI" allowfullscreen seamless frameBorder="0"&gt;&lt;/iframe&gt;&lt;/div&gt;&lt;p&gt;I'm really proud of this!&lt;/p&gt;
+</summary><content type="html">&lt;div class="youtube youtube-16x9"&gt;&lt;iframe src="https://www.youtube.com/embed/FwrZyPHnbrI" allowfullscreen seamless frameBorder="0"&gt;&lt;/iframe&gt;&lt;/div&gt;&lt;p&gt;I'm really proud of this!&lt;/p&gt;
+</content><category term="CCS"></category><category term="Video"></category></entry></feed>

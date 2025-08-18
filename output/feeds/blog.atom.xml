@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Price - Blog</title><link href="http://bryanprice.net/" rel="alternate"></link><link href="http://bryanprice.net/feeds/blog.atom.xml" rel="self"></link><id>http://bryanprice.net/</id><updated>2018-05-15T16:07:00-05:00</updated><entry><title>Python Callables</title><link href="http://bryanprice.net/python-callables.html" rel="alternate"></link><published>2018-05-15T16:07:00-05:00</published><updated>2018-05-15T16:07:00-05:00</updated><author><name>Bryan Price</name></author><id>tag:bryanprice.net,2018-05-15:/python-callables.html</id><summary type="html">&lt;p class="first last"&gt;Partials are great, but what happens when you know the parameters that need to be in the back of the method call and not the front?&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;In a previous post, I talked about python partials. They provide a way to make a new function from another with some parameters at the front pre-filled.
+What can we do to fix this? Well there is a 3rd party library called &lt;a class="reference external" href="https://stackoverflow.com/questions/7811247/how-to-fill-specific-positional-arguments-with-partial-in-python"&gt;funcy that provides an rpartial method&lt;/a&gt;.
+Or you could do something custom, like making a callable. You can make a callable class by implementing the magic function __call__.
+This lets you call an object instance like a method.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;thing&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;MyCallableClass&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;result&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;thing&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;So now let's apply this concept to implement rpartial.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;RPartial&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;method&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;method&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;method&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__call__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;method&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;os&lt;/span&gt;
+&lt;span class="n"&gt;r_join&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;RPartial&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;my&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;cool&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;path&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;r_join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;C:&lt;/span&gt;&lt;span class="se"&gt;\\&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="c1"&gt;# c:\my\cool\path is output&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This is much more verbose than funcy's version of rpartial, but it does serve well as an example of how you can use callables.
+You could definitely make something more specific for your needs.&lt;/p&gt;
+</content><category term="python"></category></entry><entry><title>Python OrderBy ThenBy</title><link href="http://bryanprice.net/python-orderby-thenby.html" rel="alternate"></link><published>2018-05-05T13:24:00-05:00</published><updated>2018-05-05T13:24:00-05:00</updated><author><name>Bryan Price</name></author><id>tag:bryanprice.net,2018-05-05:/python-orderby-thenby.html</id><summary type="html">&lt;p class="first last"&gt;C#'s Linq can  do .OrderBy and .ThenBy on an enumerable, can Python do something similar?&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;The other day I found a bug in a python file I had written. I ordered a list by two attributes descending, when I really
+wanted to order the list by one attribute descending and the other ascending.&lt;/p&gt;
+&lt;p&gt;For reference, I started off with something similar to the following code.
+I'm using tuples here instead of attributes off of an object, but the premise remains.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;lst&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[(&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;50&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+&lt;span class="n"&gt;lst&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;reverse&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c1"&gt;# if using an object the line would look similar to this lst.sort(key=lambda x: (x.first_attribute, x.second_attribute), reverse=True)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This is all fine, great, and wonderful, but I really needed to sort by the first attribute descending and the second ascending.
+So how do we accomplish this? We use cmp on the sort. A compare function takes 2 parameters and returns an integer.
+If the integer is negative, the sort knows that the first item is should be favored,
+if 0 it should favor neither, and if positive the second item should be favored.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;lst&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[(&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;50&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+&lt;span class="n"&gt;lst&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;cmp&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="k"&gt;else&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;If you aren't familiar with lambda's they are just functions that take in parameters and no return statement is needed.
+Everything right of the colon is returned. So what's going on here? Well if the first values are equal and x
+is less than y (x[1]-y[1] &amp;lt; 0) we favor x (ascending). Otherwise we just compare y[0] and x[0].&lt;/p&gt;
+&lt;p&gt;What about Python 3.0? It doesn't support cmp, but don't worry there's a workaround. If you are in Python 3.2 you can utilize
+a method called functools.cmp_to_key(). If you are between 3.0 and 3.2, you will have to implement the method yourself.
+See &lt;a class="reference external" href="https://docs.python.org/3/howto/sorting.html"&gt;https://docs.python.org/3/howto/sorting.html&lt;/a&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;functools&lt;/span&gt;
+&lt;span class="n"&gt;lst&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[(&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;50&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+&lt;span class="n"&gt;lst&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;functools&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cmp_to_key&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="k"&gt;else&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The key variable is also available in Python 2, but there you will probably just use it as it's meant to be used:
+to tell what the key of your sort is.&lt;/p&gt;
+&lt;p&gt;So how would you compare strings? You should use locale.strcoll&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;functools&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;locale&lt;/span&gt;
+&lt;span class="n"&gt;lst&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;b&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;b&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;b&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;a&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;a&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;z&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+&lt;span class="n"&gt;lst&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;functools&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cmp_to_key&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;  &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="k"&gt;else&lt;/span&gt; &lt;span class="n"&gt;locale&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;strcoll&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;])))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;In C# it's really easy to do this kind of thing. Linq has an OrderBy, OrderByDescending, ThenBy, and ThenByDescending methods.
+But even though it's not as easy to do this in python, it's not really that difficult.&lt;/p&gt;
+</content><category term="python"></category></entry><entry><title>PyCharm Live Templates</title><link href="http://bryanprice.net/pycharm-live-templates.html" rel="alternate"></link><published>2018-05-05T09:08:00-05:00</published><updated>2017-03-18T09:08:00-05:00</updated><author><name>Bryan Price</name></author><id>tag:bryanprice.net,2018-05-05:/pycharm-live-templates.html</id><summary type="html">&lt;p class="first last"&gt;I discuss PyCharm's Live Templates functionality and Code Templates.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;So sometime last year I found myself writing a lot of repetitive code. First of all, I have to write python toolboxes for work.
+A python toolbox is a python file with the extension .pyt. It is used in ESRI's ArcMap and ArcCatalog programs.
+When writing a python toolbox file in PyCharm, it's best to start with a skeleton template because the toolbox must
+adhere to a given format.&lt;/p&gt;
+&lt;p&gt;Before we create the template, I would advise setting PyCharm to recognize the file extension .pyt as a python file.
+To do this go to the File-&amp;gt;Settings on Windows or PyCharm-&amp;gt;Preferences on macOS.
+Search for file types in the search bar in the upper left hand corner and add *.pyt under the Python group.&lt;/p&gt;
+&lt;img alt="" src="images/new_file_type.png" style="width: 100%;" /&gt;
+&lt;p&gt;Now go to Settings-&amp;gt;Editor-&amp;gt;File and Code Templates and create your PythonToolbox template with the extension pyt.&lt;/p&gt;
+&lt;img alt="" src="images/pyt_code_template.png" style="width: 100%;" /&gt;
+&lt;p&gt;Here is the code to paste into the template.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;arcpy&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Toolbox&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Define the toolbox (the name of the toolbox is the name of the&lt;/span&gt;
+&lt;span class="sd"&gt;        .pyt file).&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;label&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;Toolbox&amp;quot;&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;alias&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+
+        &lt;span class="c1"&gt;# List of tool classes associated with this toolbox&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tools&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;Tool&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Tool&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Define the tool (tool name is the name of the class).&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;label&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;Tool&amp;quot;&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;description&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;canRunInBackground&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;False&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;getParameterInfo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Define parameter definitions&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+        &lt;span class="n"&gt;params&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;None&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;params&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;isLicensed&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Set whether tool is licensed to execute.&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;True&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;updateParameters&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;parameters&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Modify the values and properties of parameters before internal&lt;/span&gt;
+&lt;span class="sd"&gt;        validation is performed.  This method is called whenever a parameter&lt;/span&gt;
+&lt;span class="sd"&gt;        has been changed.&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;updateMessages&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;parameters&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Modify the messages created by internal validation for each tool&lt;/span&gt;
+&lt;span class="sd"&gt;        parameter.  This method is called after internal validation.&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;execute&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;parameters&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;messages&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;The source code of the tool.&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now you can create a new file and PythonToolbox is an option. When you create the new file it will have this text as
+the skeleton.&lt;/p&gt;
+&lt;p&gt;Something else that I found useful is PyCharm's live templates. Live templates give the ability to type a few letters,
+hit tab and then fill out some code. If you have PyCharm give it a try, just type iter then press tab in a python file.
+You should see something like this:&lt;/p&gt;
+&lt;img alt="" src="images/iter_live_template1.PNG" style="width: 500px;" /&gt;
+&lt;p&gt;Hit tab and you will see this&lt;/p&gt;
+&lt;img alt="" src="images/iter_live_template2.PNG" style="width: 500px;" /&gt;
+&lt;p&gt;You can then fill out the template by typing in variable names and hitting tab to go to the next place in the template.&lt;/p&gt;
+&lt;p&gt;So now that you know what a live template is, wouldn't it be handy to make your own? We are going to make a live template
+for python toolboxes to make it easier to fill in arcpy.Parameter values. First, let's make a Live Template Group to organize
+all of our PythonToolbox live templates.
+You can do this by going to Settigns-&amp;gt;Editor-&amp;gt;Live Template and clicking the red plus on the right hand side and choosing to create a new group.
+I aptly named my group PythonToolbox.&lt;/p&gt;
+&lt;img alt="" src="images/live_template_group.png" style="width: 100%;" /&gt;
+&lt;p&gt;Next create a new live template in the group. You will be asked for an abbreviation (this is what you will type to be auto-completed like iter from my previous example).
+You will also be asked for a description to explain what it is, and then you will create the template.&lt;/p&gt;
+&lt;p&gt;I set my abbreviation up as &amp;quot;aparam&amp;quot; with the description of &amp;quot;Arcpy Parameter&amp;quot;. I used this as the template:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+$VAR$ = arcpy.Parameter(displayName=&amp;quot;$DISPLAY$&amp;quot;,name=&amp;quot;$NAME$&amp;quot;,datatype=&amp;quot;$DATATYPE$&amp;quot;,parameterType=&amp;quot;$PARAM_TYPE$&amp;quot;,direction=&amp;quot;$DIRECTION$&amp;quot;,multiValue=$MULTIVALUE$)
+&lt;/pre&gt;
+&lt;p&gt;If you notice, everything with $ surrounding it is a variable.  If you choose &amp;quot;Edit Variable&amp;quot; you can set valid values for each variable (using enum) and a default value.&lt;/p&gt;
+&lt;img alt="" src="images/live_template_setup.PNG" style="width: 100%;" /&gt;
+&lt;p&gt;Before you save the template make sure you set where the template is applicable. In the image above you should see a &amp;quot;Change&amp;quot; button near the bottom.
+When you are first creating the template you will get a warning that there are not contexts currently setup and the button will read &amp;quot;Define&amp;quot;. I chose to make this template show up in python classes, and other (so anywhere in a python file).&lt;/p&gt;
+&lt;p&gt;One last thing: If you want to share a live template you can right click it and choose &amp;quot;copy&amp;quot;. Someone else can just paste in the value into their IDE.&lt;/p&gt;
+&lt;p&gt;So here is the live template that I created.&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+&amp;lt;template name=&amp;quot;aparam&amp;quot; value=&amp;quot;$VAR$ = arcpy.Parameter(displayName=&amp;amp;quot;$DISPLAY$&amp;amp;quot;,name=&amp;amp;quot;$NAME$&amp;amp;quot;,datatype=&amp;amp;quot;$DATATYPE$&amp;amp;quot;,parameterType=&amp;amp;quot;$PARAM_TYPE$&amp;amp;quot;,direction=&amp;amp;quot;$DIRECTION$&amp;amp;quot;,multiValue=$MULTIVALUE$) &amp;quot; description=&amp;quot;Arcpy Parameter&amp;quot; toReformat=&amp;quot;true&amp;quot; toShortenFQNames=&amp;quot;true&amp;quot;&amp;gt;
+  &amp;lt;variable name=&amp;quot;VAR&amp;quot; expression=&amp;quot;&amp;quot; defaultValue=&amp;quot;&amp;quot; alwaysStopAt=&amp;quot;true&amp;quot; /&amp;gt;
+  &amp;lt;variable name=&amp;quot;DISPLAY&amp;quot; expression=&amp;quot;&amp;quot; defaultValue=&amp;quot;&amp;quot; alwaysStopAt=&amp;quot;true&amp;quot; /&amp;gt;
+  &amp;lt;variable name=&amp;quot;NAME&amp;quot; expression=&amp;quot;&amp;quot; defaultValue=&amp;quot;&amp;quot; alwaysStopAt=&amp;quot;true&amp;quot; /&amp;gt;
+  &amp;lt;variable name=&amp;quot;DATATYPE&amp;quot; expression=&amp;quot;enum(&amp;amp;quot;DEAddressLocator&amp;amp;quot;,&amp;amp;quot;GPAddressLocatorStyle&amp;amp;quot;,&amp;amp;quot;analysis_cell_size&amp;amp;quot;,&amp;amp;quot;GPType&amp;amp;quot;,&amp;amp;quot;DEMapDocument&amp;amp;quot;,&amp;amp;quot;GPArealUnit&amp;amp;quot;,&amp;amp;quot;GPBoolean&amp;amp;quot;,&amp;amp;quot;DECadDrawingDataset&amp;amp;quot;,&amp;amp;quot;GPCalculatorExpression&amp;amp;quot;,&amp;amp;quot;DECatalogRoot&amp;amp;quot;,&amp;amp;quot;GPSACellSize&amp;amp;quot;,&amp;amp;quot;GPCellSizeXY&amp;amp;quot;,&amp;amp;quot;GPCompositeLayer&amp;amp;quot;,&amp;amp;quot;GPSAGDBEnvCompression&amp;amp;quot;,&amp;amp;quot;GPCoordinateSystem&amp;amp;quot;,&amp;amp;quot;DESpatialReferencesFolder&amp;amp;quot;,&amp;amp;quot;DECoverage&amp;amp;quot;,&amp;amp;quot;DECoverageFeatureClasses&amp;amp;quot;,&amp;amp;quot;DEType&amp;amp;quot;,&amp;amp;quot;GPDataFile&amp;amp;quot;,&amp;amp;quot;DERemoteDatabaseFolder&amp;amp;quot;,&amp;amp;quot;DEDatasetType&amp;amp;quot;,&amp;amp;quot;GPDate&amp;amp;quot;,&amp;amp;quot;DEDbaseTable&amp;amp;quot;,&amp;amp;quot;GP3DADecimate&amp;amp;quot;,&amp;amp;quot;DEDiskConnection&amp;amp;quot;,&amp;amp;quot;GPDouble&amp;amp;quot;,&amp;amp;quot;GPEncryptedString&amp;amp;quot;,&amp;amp;quot;GPEnvelope&amp;amp;quot;,&amp;amp;quot;GPEvaluationScale&amp;amp;quot;,&amp;amp;quot;GPExtent&amp;amp;quot;,&amp;amp;quot;GPSAExtractValues&amp;amp;quot;,&amp;amp;quot;DEFeatureClass&amp;amp;quot;,&amp;amp;quot;DEFeatureDataset&amp;amp;quot;,&amp;amp;quot;GPFeatureLayer&amp;amp;quot;,&amp;amp;quot;GPFeatureRecordSetLayer&amp;amp;quot;,&amp;amp;quot;Field&amp;amp;quot;,&amp;amp;quot;GPFieldInfo&amp;amp;quot;,&amp;amp;quot;GPFieldMapping&amp;amp;quot;,&amp;amp;quot;DEFile&amp;amp;quot;,&amp;amp;quot;DEFolder&amp;amp;quot;,&amp;amp;quot;GPRasterFormulated&amp;amp;quot;,&amp;amp;quot;GPSAFuzzyFunction&amp;amp;quot;,&amp;amp;quot;DEGeodatasetType&amp;amp;quot;,&amp;amp;quot;DEGeoDataServer&amp;amp;quot;,&amp;amp;quot;DEGeometricNetwork&amp;amp;quot;,&amp;amp;quot;GPGALayer&amp;amp;quot;,&amp;amp;quot;GPGASearchNeighborhood&amp;amp;quot;,&amp;amp;quot;GPGAValueTable&amp;amp;quot;,&amp;amp;quot;DEGlobeServer&amp;amp;quot;,&amp;amp;quot;DEGPServer&amp;amp;quot;,&amp;amp;quot;GPGraph&amp;amp;quot;,&amp;amp;quot;GPGraphDataTable&amp;amp;quot;,&amp;amp;quot;GPGroupLayer&amp;amp;quot;,&amp;amp;quot;GPSAHorizontalFactor&amp;amp;quot;,&amp;amp;quot;DEImageServer&amp;amp;quot;,&amp;amp;quot;Index&amp;amp;quot;,&amp;amp;quot;GPINFOExpression&amp;amp;quot;,&amp;amp;quot;GPArcInfoItem&amp;amp;quot;,&amp;amp;quot;DEArcInfoTable&amp;amp;quot;,&amp;amp;quot;DELasDataset&amp;amp;quot;,&amp;amp;quot;GPLasDatasetLayer&amp;amp;quot;,&amp;amp;quot;GPLayer&amp;amp;quot;,&amp;amp;quot;DELayer&amp;amp;quot;,&amp;amp;quot;GPLine&amp;amp;quot;,&amp;amp;quot;GPLinearUnit&amp;amp;quot;,&amp;amp;quot;GPLong&amp;amp;quot;,&amp;amp;quot;GPMDomain&amp;amp;quot;,&amp;amp;quot;DEMapServer&amp;amp;quot;,&amp;amp;quot;DEMosaicDataset&amp;amp;quot;,&amp;amp;quot;GPMosaicLayer&amp;amp;quot;,&amp;amp;quot;GPSANeighborhood&amp;amp;quot;,&amp;amp;quot;NAClassFieldMap&amp;amp;quot;,&amp;amp;quot;GPNAHierarchySettings&amp;amp;quot;,&amp;amp;quot;GPNALayer&amp;amp;quot;,&amp;amp;quot;DENetworkDataset&amp;amp;quot;,&amp;amp;quot;GPNetworkDatasetLayer&amp;amp;quot;,&amp;amp;quot;DECadastralFabric&amp;amp;quot;,&amp;amp;quot;GPCadastralFabricLayer&amp;amp;quot;,&amp;amp;quot;GPPoint&amp;amp;quot;,&amp;amp;quot;GPPolygon&amp;amp;quot;,&amp;amp;quot;DEPrjFile&amp;amp;quot;,&amp;amp;quot;GPSAGDBEnvPyramid&amp;amp;quot;,&amp;amp;quot;GPSARadius&amp;amp;quot;,&amp;amp;quot;GPRandomNumberGenerator&amp;amp;quot;,&amp;amp;quot;DERasterBand&amp;amp;quot;,&amp;amp;quot;GPRasterCalculatorExpression&amp;amp;quot;,&amp;amp;quot;DERasterCatalog&amp;amp;quot;,&amp;amp;quot;GPRasterCatalogLayer&amp;amp;quot;,&amp;amp;quot;GPRasterDataLayer&amp;amp;quot;,&amp;amp;quot;DERasterDataset&amp;amp;quot;,&amp;amp;quot;GPRasterLayer&amp;amp;quot;,&amp;amp;quot;GPSAGDBEnvStatistics&amp;amp;quot;,&amp;amp;quot;GPRasterBuilder&amp;amp;quot;,&amp;amp;quot;GPRecordSet&amp;amp;quot;,&amp;amp;quot;DERelationshipClass&amp;amp;quot;,&amp;amp;quot;GPSARemap&amp;amp;quot;,&amp;amp;quot;GPRouteMeasureEventProperties&amp;amp;quot;,&amp;amp;quot;DESchematicDataset&amp;amp;quot;,&amp;amp;quot;DESchematicDiagram&amp;amp;quot;,&amp;amp;quot;DESchematicFolder&amp;amp;quot;,&amp;amp;quot;GPSchematicLayer&amp;amp;quot;,&amp;amp;quot;GPSASemiVariogram&amp;amp;quot;,&amp;amp;quot;DEServerConnection&amp;amp;quot;,&amp;amp;quot;DEShapefile&amp;amp;quot;,&amp;amp;quot;GPSpatialReference&amp;amp;quot;,&amp;amp;quot;GPSQLExpression&amp;amp;quot;,&amp;amp;quot;GPString&amp;amp;quot;,&amp;amp;quot;GPStringHidden&amp;amp;quot;,&amp;amp;quot;DETable&amp;amp;quot;,&amp;amp;quot;GPTableView&amp;amp;quot;,&amp;amp;quot;GPTerrainLayer&amp;amp;quot;,&amp;amp;quot;DETextfile&amp;amp;quot;,&amp;amp;quot;GPSAGDBEnvTileSize&amp;amp;quot;,&amp;amp;quot;GPSATimeConfiguration&amp;amp;quot;,&amp;amp;quot;DETin&amp;amp;quot;,&amp;amp;quot;GPTinLayer&amp;amp;quot;,&amp;amp;quot;DETool&amp;amp;quot;,&amp;amp;quot;DEToolbox&amp;amp;quot;,&amp;amp;quot;GPSATopoFeatures&amp;amp;quot;,&amp;amp;quot;DETopology&amp;amp;quot;,&amp;amp;quot;GPTopologyLayer&amp;amp;quot;,&amp;amp;quot;GPValueTable&amp;amp;quot;,&amp;amp;quot;GPVariant&amp;amp;quot;,&amp;amp;quot;GPSAVerticalFactor&amp;amp;quot;,&amp;amp;quot;DEVPFCoverage&amp;amp;quot;,&amp;amp;quot;DEVPFTable&amp;amp;quot;,&amp;amp;quot;DEWCSCoverage&amp;amp;quot;,&amp;amp;quot;GPSAWeightedOverlayTable&amp;amp;quot;,&amp;amp;quot;GPSAWeightedSum&amp;amp;quot;,&amp;amp;quot;DEWMSMap&amp;amp;quot;,&amp;amp;quot;DEWorkspace&amp;amp;quot;,&amp;amp;quot;GPXYDomain&amp;amp;quot;,&amp;amp;quot;GPZDomain&amp;amp;quot;)&amp;quot; defaultValue=&amp;quot;&amp;quot; alwaysStopAt=&amp;quot;true&amp;quot; /&amp;gt;
+  &amp;lt;variable name=&amp;quot;PARAM_TYPE&amp;quot; expression=&amp;quot;enum(&amp;amp;quot;Required&amp;amp;quot;, &amp;amp;quot;Optional&amp;amp;quot;)&amp;quot; defaultValue=&amp;quot;Required&amp;quot; alwaysStopAt=&amp;quot;true&amp;quot; /&amp;gt;
+  &amp;lt;variable name=&amp;quot;DIRECTION&amp;quot; expression=&amp;quot;enum(&amp;amp;quot;Input&amp;amp;quot;,&amp;amp;quot;Output&amp;amp;quot;)&amp;quot; defaultValue=&amp;quot;Input&amp;quot; alwaysStopAt=&amp;quot;true&amp;quot; /&amp;gt;
+  &amp;lt;variable name=&amp;quot;MULTIVALUE&amp;quot; expression=&amp;quot;enum(&amp;amp;quot;True&amp;amp;quot;, &amp;amp;quot;False&amp;amp;quot;)&amp;quot; defaultValue=&amp;quot;False&amp;quot; alwaysStopAt=&amp;quot;true&amp;quot; /&amp;gt;
+  &amp;lt;context&amp;gt;
+    &amp;lt;option name=&amp;quot;Python&amp;quot; value=&amp;quot;true&amp;quot; /&amp;gt;
+  &amp;lt;/context&amp;gt;
+&amp;lt;/template&amp;gt;
+&lt;/pre&gt;
+&lt;p&gt;Enjoy!&lt;/p&gt;
+</content><category term="Pycharm"></category></entry><entry><title>Python Partials</title><link href="http://bryanprice.net/python-partials.html" rel="alternate"></link><published>2016-05-02T11:23:00-05:00</published><updated>2016-05-02T11:23:00-05:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2016-05-02:/python-partials.html</id><summary type="html">&lt;p class="first last"&gt;I discuss the usefulness of Partials in Python&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;Have you ever heard of the concept of currying? If not, I'm about to blow your mind. Let's say that you have
+a method you want to use and it takes two parameters. The only problem is that you only have one parameter at the moment.
+You will have the next parameter later. You can create an intermediate method from the other method that takes one
+parameter and then use that method at the time of your choosing. In Python, this is achieved by using a partial.&lt;/p&gt;
+&lt;p&gt;Let's say that you ran os.listdir, this method returns the unqualified file names inside of a folder. The only problem
+is that I want the file names fully qualified with it's entire path. So I should use os.path.join on each of the items.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;os&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;functools&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;partial&lt;/span&gt;
+&lt;span class="n"&gt;folder&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;/your/path/to/whatever&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;folder_join&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;partial&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;folder&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;images&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;listdir&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;folder&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;endswith&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;.jpg&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+&lt;span class="n"&gt;images&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;folder_join&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;images&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;images&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;If one.jpg, two.jpg, and three.jpg are in our folder, we would get this output =&amp;gt;
+['/your/path/to/whatever/one.jpg', '/your/path/to/whatever/two.jpg', '/your/path/to/whatever/three.jpg']&lt;/p&gt;
+</content><category term="Python"></category></entry><entry><title>Python Magic Functions</title><link href="http://bryanprice.net/python-magic-functions.html" rel="alternate"></link><published>2015-05-07T21:33:00-05:00</published><updated>2015-05-07T21:33:00-05:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2015-05-07:/python-magic-functions.html</id><summary type="html">&lt;p&gt;Python has many magic functions that will allow your classes to do all
+kinds of fun stuff. You may want your object to act like a dictionary,
+or a list, you may want to make sure str() prints your object a certain
+way, or you may want to override operators …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Python has many magic functions that will allow your classes to do all
+kinds of fun stuff. You may want your object to act like a dictionary,
+or a list, you may want to make sure str() prints your object a certain
+way, or you may want to override operators. You can tell your object how
+to act with the &amp;quot;in&amp;quot; clause and how to deconstruct when using the &amp;quot;with&amp;quot;
+clause. There are so many other magic methods as well.&lt;/p&gt;
+&lt;p&gt;Here's a simple example of using magic functions&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__eq__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+            &lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__gt__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+            &lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;=&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__ge__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+            &lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__lt__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+             &lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;
+         &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;=&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__le__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+            &lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__add__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+            &lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__sub__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+            &lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__mul__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+            &lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__div__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+            &lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__truediv__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="fm"&gt;__div__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__str__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__int__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__long__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;long&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__float__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;float&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="c1"&gt;# -2&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="c1"&gt;# 6&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="c1"&gt;# .5&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="c1"&gt;# 8&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="c1"&gt;# True&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="c1"&gt;# False&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="c1"&gt;# True&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;=&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="c1"&gt;# True&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;=&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="c1"&gt;# False&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You can test this example with &lt;a class="reference external" href="http://repl.it/nCh"&gt;repl.it&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;But look at what we can do now, we can do math backwards! Obviously
+there are several other mathematical functions that should probably be
+implemented as well like square root and such, but this is a nice start.&lt;/p&gt;
+&lt;p&gt;So let's look at __add__.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__add__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;OppositeMath&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;When a + b is run &lt;strong&gt;a&lt;/strong&gt; will be the &lt;strong&gt;self&lt;/strong&gt; that comes into the
+__add__ method and &lt;strong&gt;b&lt;/strong&gt; will be &lt;strong&gt;num&lt;/strong&gt;. So the left hand side must
+always be an OppositeMath. I check to see if the right hand side is an
+OppositeMath, and if it is I do math on the OppositeMath's num variable.
+I also return an OppositeMath object because we may want to do more
+opposite math after returning the value! Every other magic function is
+pretty similar for this example. I also implement str, float, int, and
+long to tell the interpreter what to do if someone tries to cast an
+OppositeMath to those types.&lt;/p&gt;
+&lt;p&gt;OppositeMath itself isn't very useful, but you could do something like
+implement an event dispatcher that uses the magic functions iadd and
+isub to take advantage of += and -=. You could have those operators add
+and remove events.&lt;/p&gt;
+&lt;p&gt;Here's a good resource for more magic methods:
+&lt;a class="reference external" href="http://www.rafekettler.com/magicmethods.html"&gt;http://www.rafekettler.com/magicmethods.html&lt;/a&gt;.&lt;/p&gt;
+</content><category term="Python"></category></entry><entry><title>Python List Comprehension and Sets</title><link href="http://bryanprice.net/python-list-comprehension-and-sets.html" rel="alternate"></link><published>2015-01-29T05:18:00-06:00</published><updated>2015-01-29T05:18:00-06:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2015-01-29:/python-list-comprehension-and-sets.html</id><summary type="html">&lt;p&gt;I work for a company that does GIS work, and over the past week or so
+I've been working on a script that does a lot of different things. One
+of it's subroutines deletes data from Oracle.&lt;/p&gt;
+&lt;p&gt;First I was told (or I interpreted) it was safe to delete everything …&lt;/p&gt;</summary><content type="html">&lt;p&gt;I work for a company that does GIS work, and over the past week or so
+I've been working on a script that does a lot of different things. One
+of it's subroutines deletes data from Oracle.&lt;/p&gt;
+&lt;p&gt;First I was told (or I interpreted) it was safe to delete everything
+from the Oracle connection. So this is similar to my first stab at the
+code that deletes data from Oracle.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;arcpy&lt;/span&gt;
+
+&lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;workspace&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;c:\oracle_connection.sde&amp;quot;&lt;/span&gt; &lt;span class="c1"&gt;# file that holds all the connection info&lt;/span&gt;
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;item&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ListTables&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ListFeatureClasses&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ListDatasets&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Delete_management&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;One of the neat things about python is the ease at which lists can be
+pulled together. Simply use the + operator!&lt;/p&gt;
+&lt;p&gt;The code above lists all tables, feature classes, and datasets. If
+you're unfamiliar with ArcGIS, a feature class is simply a table that
+has a shape related to each row. A dataset is a container for feature
+classes.&lt;/p&gt;
+&lt;p&gt;When I ran the above code in my test environment, data was deleted from
+some tables that were owned by a different user than what was specified
+in the sde connection file. Apparently when tables, feature classes and
+datasets are listed it's not just limited to the current user. This
+could be particularly problematic if the connection user has permissions
+to delete all tables. My solution was to only list tables that started
+with the database user followed by a period.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;arcpy&lt;/span&gt;
+
+&lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;workspace&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;c:\oracle_connection.sde&amp;quot;&lt;/span&gt; &lt;span class="c1"&gt;# file that holds all the connection info&lt;/span&gt;
+&lt;span class="n"&gt;desc&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Describe&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;workspace&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;dbo&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;desc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;connectionProperties&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;upper&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="n"&gt;tables&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;upper&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ListTables&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;upper&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;startswith&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dbo&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;.&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+&lt;span class="n"&gt;feature_classes&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;upper&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ListFeatureClasses&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;upper&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;startswith&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dbo&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;.&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+&lt;span class="n"&gt;datasets&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;upper&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ListDatasets&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;upper&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;startswith&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dbo&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;.&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;item&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;tables&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;feature_classes&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;datasets&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Delete_management&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Did you see that? [x.upper() for x in arcpy.ListTables() if
+x.upper().startswith(dbo + &amp;quot;.&amp;quot;)]&lt;/div&gt;
+&lt;div class="line"&gt;This is what is known as a list comprehension. It's similar to C#'s
+LINQ. If this were a C# list, this would be written as var tables =
+arcpy.ListTables().Select(x=&amp;gt;x.ToUpper()).Where(x=&amp;gt;x != dbo)&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;So what now? Well as it turns out we only wanted to delete pre-approved
+tables and feature classes and we were not concerned with datasets. So I
+added the tables and feature classes into configuration and I did
+intersections with the lists.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;arcpy&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;delete&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tables&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;feature_classes&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;@param tables: list of unqualified tables that we will drop&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;@param feature_classes: list of unqualified feature classes that we will drop&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;@type tables: [str]&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;@type feature_classes: [str]&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;workspace&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;c:\oracle_connection.sde&amp;quot;&lt;/span&gt; &lt;span class="c1"&gt;# file that holds all the connection info&lt;/span&gt;
+    &lt;span class="n"&gt;desc&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Describe&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;workspace&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;dbo&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;desc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;connectionProperties&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;upper&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="n"&gt;deletable_tables&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;dbo&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;.&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;upper&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;tables&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="n"&gt;deletable_features&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;dbo&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;.&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;upper&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;feature_classes&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+    &lt;span class="n"&gt;tables_in_db&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;upper&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ListTables&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;upper&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;startswith&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dbo&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;.&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+    &lt;span class="n"&gt;features_in_db&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;upper&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ListFeatureClasses&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;upper&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;startswith&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dbo&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;.&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+
+    &lt;span class="c1"&gt;# if the table is in the list of preapproved tables&lt;/span&gt;
+    &lt;span class="c1"&gt;# and the table actually exists&lt;/span&gt;
+    &lt;span class="c1"&gt;# we want to delete it&lt;/span&gt;
+    &lt;span class="n"&gt;tables_to_delete&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;deletable_tables&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="nb"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tables_in_db&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="n"&gt;features_to_delete&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;deletable_features&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="nb"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;features_in_db&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;item&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;tables_to_delete&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;features_to_delete&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;arcpy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Delete_management&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;So there you have it a real world problem solved by list comprehensions
+and sets.&lt;/p&gt;
+</content><category term="Python"></category></entry><entry><title>IntelliJ and Android</title><link href="http://bryanprice.net/intellij-and-android.html" rel="alternate"></link><published>2013-03-14T12:39:00-05:00</published><updated>2013-03-14T12:39:00-05:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2013-03-14:/intellij-and-android.html</id><summary type="html">&lt;p&gt;I've been enjoying IntelliJ for android development. Here's a video on
+setting up a project. At some point I'd like to do a video talking about
+some gotchas that I've found. Until then, just enjoy this:&lt;/p&gt;
+&lt;div class="youtube youtube-16x9"&gt;&lt;iframe src="https://www.youtube.com/embed/y-WLXExDcTg" allowfullscreen seamless frameBorder="0"&gt;&lt;/iframe&gt;&lt;/div&gt;</summary><content type="html">&lt;p&gt;I've been enjoying IntelliJ for android development. Here's a video on
+setting up a project. At some point I'd like to do a video talking about
+some gotchas that I've found. Until then, just enjoy this:&lt;/p&gt;
+&lt;div class="youtube youtube-16x9"&gt;&lt;iframe src="https://www.youtube.com/embed/y-WLXExDcTg" allowfullscreen seamless frameBorder="0"&gt;&lt;/iframe&gt;&lt;/div&gt;</content></entry><entry><title>The Story of Node.js</title><link href="http://bryanprice.net/the-story-of-node-js.html" rel="alternate"></link><published>2013-02-28T22:34:00-06:00</published><updated>2013-02-28T22:34:00-06:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2013-02-28:/the-story-of-node-js.html</id><summary type="html">&lt;div class="youtube youtube-16x9"&gt;&lt;iframe src="https://www.youtube.com/embed/SAc0vQCC6UQ" allowfullscreen seamless frameBorder="0"&gt;&lt;/iframe&gt;&lt;/div&gt;</summary><content type="html">&lt;div class="youtube youtube-16x9"&gt;&lt;iframe src="https://www.youtube.com/embed/SAc0vQCC6UQ" allowfullscreen seamless frameBorder="0"&gt;&lt;/iframe&gt;&lt;/div&gt;</content><category term="Video"></category></entry><entry><title>WPF Uppercase AutoComplete</title><link href="http://bryanprice.net/wpf-uppercase-autocomplete.html" rel="alternate"></link><published>2012-08-10T20:39:00-05:00</published><updated>2012-08-10T20:39:00-05:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2012-08-10:/wpf-uppercase-autocomplete.html</id><summary type="html">&lt;p&gt;One of our clients wants uppercase characters in all of there inputs.
+Unfortunately System.Windows.Controls.AutoCompleteBox doesn't support
+the CharacterCasing option that is on a standard text box. My solution
+is to simply inherit from AutoCompleteBox and after the template has
+been applied grab the text box that is …&lt;/p&gt;</summary><content type="html">&lt;p&gt;One of our clients wants uppercase characters in all of there inputs.
+Unfortunately System.Windows.Controls.AutoCompleteBox doesn't support
+the CharacterCasing option that is on a standard text box. My solution
+is to simply inherit from AutoCompleteBox and after the template has
+been applied grab the text box that is in the control and set it's
+CharacterCasing to uppercase.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;public&lt;/span&gt; &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;UppercaseAutoComplete&lt;/span&gt; &lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;AutoCompleteBox&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;public&lt;/span&gt; &lt;span class="k"&gt;override&lt;/span&gt; &lt;span class="k"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;OnApplyTemplate&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="k"&gt;base&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;OnApplyTemplate&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+        &lt;span class="n"&gt;TextBox&lt;/span&gt; &lt;span class="n"&gt;actualTextBox&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Template&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;FindName&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Text&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;TextBox&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;actualTextBox&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CharacterCasing&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;CharacterCasing&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Upper&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+</content></entry><entry><title>Give Camp Birmingham</title><link href="http://bryanprice.net/give-camp-birmingham.html" rel="alternate"></link><published>2011-01-29T17:19:00-06:00</published><updated>2011-01-29T17:19:00-06:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2011-01-29:/give-camp-birmingham.html</id><summary type="html">&lt;p&gt;Recently I went to Give Camp in Birmingham.&amp;nbsp; It’s an event sponsored by
+Microsoft for developers to join together to help non-profits and
+charities.&amp;nbsp; Developers spend the weekend developing software or creating
+web sites that the organization needs.&amp;nbsp; It was a lot of fun and here is
+a promotional …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Recently I went to Give Camp in Birmingham.&amp;nbsp; It’s an event sponsored by
+Microsoft for developers to join together to help non-profits and
+charities.&amp;nbsp; Developers spend the weekend developing software or creating
+web sites that the organization needs.&amp;nbsp; It was a lot of fun and here is
+a promotional video.&lt;/p&gt;
+&lt;iframe src="http://player.vimeo.com/video/19132894?color=ffffff" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;
+&lt;/iframe&gt;&lt;p&gt;&lt;a class="reference external" href="http://vimeo.com/19132894"&gt;Give Camp Birmingham | Promo&lt;/a&gt; from
+&lt;a class="reference external" href="http://vimeo.com/user445453"&gt;Hampton Road Studios&lt;/a&gt; on
+&lt;a class="reference external" href="https://vimeo.com"&gt;Vimeo&lt;/a&gt;.&lt;/p&gt;
+</content><category term="Charity"></category><category term="Give Camp"></category><category term="Video"></category></entry><entry><title>Media Monkey PS3 Media Server Plugin</title><link href="http://bryanprice.net/media-monkey-ps3-media-server-plugin.html" rel="alternate"></link><published>2010-12-04T11:12:00-06:00</published><updated>2010-12-04T11:12:00-06:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2010-12-04:/media-monkey-ps3-media-server-plugin.html</id><summary type="html">&lt;p&gt;You may have heard me talk about &lt;a class="reference external" href="http://www.mediamonkey.com/"&gt;Media
+Monkey&lt;/a&gt; before.&amp;nbsp; If not, it is my
+favorite music player.&amp;nbsp; It’s based on the winamp engine but is very
+powerful for handling mp3 tags, converting music formats, monitor and
+import music (great for amazon mp3 stuff) and has integration with a …&lt;/p&gt;</summary><content type="html">&lt;p&gt;You may have heard me talk about &lt;a class="reference external" href="http://www.mediamonkey.com/"&gt;Media
+Monkey&lt;/a&gt; before.&amp;nbsp; If not, it is my
+favorite music player.&amp;nbsp; It’s based on the winamp engine but is very
+powerful for handling mp3 tags, converting music formats, monitor and
+import music (great for amazon mp3 stuff) and has integration with a few
+online stores.&amp;nbsp; There is a free version, but the gold version is only 40
+bucks and well worth it if you want a great way to manage your music.&lt;/p&gt;
+&lt;p&gt;You may also be aware that &lt;a class="reference external" href="http://ps3mediaserver.blogspot.com/"&gt;PS3 Media
+Server&lt;/a&gt; is a pretty awesome way
+to get media content onto a ps3 or other upnp/dlna device.&amp;nbsp; PS3 Media
+Server’s music streaming is very limited.&amp;nbsp; It just shows the music in a
+folder structure.&amp;nbsp; I did a quick google search and found exactly what I
+was looking for.&amp;nbsp; Someone has written a plugin to access your media
+monkey library via the PS3 Media Server.&amp;nbsp; I now have access to my media
+monkey library on my ps3 (playlists included!).&lt;/p&gt;
+&lt;p&gt;Details can be found
+&lt;a class="reference external" href="http://sites.google.com/site/elbotijomm/home/ps3mediaserver-mods"&gt;here&lt;/a&gt;.&lt;/p&gt;
+</content></entry><entry><title>SageTV Rename</title><link href="http://bryanprice.net/sagetv-rename.html" rel="alternate"></link><published>2010-06-06T15:40:00-05:00</published><updated>2010-06-06T15:40:00-05:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2010-06-06:/sagetv-rename.html</id><summary type="html">&lt;p&gt;Many of you may remember that I wrote a script for BeyondTV (&lt;a class="reference external" href="pages/coding-projects.html"&gt;BeyondTV
+Renamer&lt;/a&gt;) that utilized a
+command line tool that someone had written to create an XML file giving
+detailed information about the given file.&amp;nbsp; My script compared the
+airdate from this dumped XML file with airdates of matching …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Many of you may remember that I wrote a script for BeyondTV (&lt;a class="reference external" href="pages/coding-projects.html"&gt;BeyondTV
+Renamer&lt;/a&gt;) that utilized a
+command line tool that someone had written to create an XML file giving
+detailed information about the given file.&amp;nbsp; My script compared the
+airdate from this dumped XML file with airdates of matching shows on
+TVRage.com to rename the files in such a way that XBMC or Boxee could
+read the file and get the metadata (like show description and images).&lt;/p&gt;
+&lt;p&gt;Well today I’m releasing a script that I wrote that does something
+similar for SageTV.&amp;nbsp; Technically speaking, it does not actually rename
+the file.&amp;nbsp; It creates symlinks to the files named in such a way that
+XBMC or Boxee can read the files and pickup the metadata.&amp;nbsp; And instead
+of needing the command line tool, you need the SageTV Web Interface that
+was written by Neilm.&amp;nbsp; By creating symlinks, it allows for only 1 true
+copy of the file to exist and for the show to remain in SageTV and in
+Boxee or XBMC.&lt;/p&gt;
+&lt;p&gt;Original &lt;a class="reference external" href="https://github.com/southernprogrammer/BTVRenamer"&gt;BeyondTV
+Renamer&lt;/a&gt; | New &lt;a class="reference external" href="https://github.com/southernprogrammer/SageTVRename"&gt;SageTV
+Rename&lt;/a&gt;&lt;/p&gt;
+</content><category term="BeyondTV"></category><category term="BeyondTV Rename"></category><category term="SageTV"></category><category term="SageTV Rename"></category></entry><entry><title>Agile Development</title><link href="http://bryanprice.net/agile-development.html" rel="alternate"></link><published>2010-04-08T18:29:00-05:00</published><updated>2010-04-08T18:29:00-05:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2010-04-08:/agile-development.html</id><summary type="html">&lt;p&gt;So the software company that I work for &lt;a class="reference external" href="http://www.3-gis.com"&gt;3-GIS&lt;/a&gt;
+has decided to start to adopt some agile development practices. &amp;nbsp;This
+document describes a little bit about why the waterfall process isn't
+that great. &amp;nbsp;It's a primer for &amp;quot;The Daily Scrum&amp;quot; which prepares
+developers for a &amp;quot;sprint&amp;quot; which is an iteration …&lt;/p&gt;</summary><content type="html">&lt;p&gt;So the software company that I work for &lt;a class="reference external" href="http://www.3-gis.com"&gt;3-GIS&lt;/a&gt;
+has decided to start to adopt some agile development practices. &amp;nbsp;This
+document describes a little bit about why the waterfall process isn't
+that great. &amp;nbsp;It's a primer for &amp;quot;The Daily Scrum&amp;quot; which prepares
+developers for a &amp;quot;sprint&amp;quot; which is an iteration of work for the team.&lt;/p&gt;
+&lt;p&gt;&lt;a class="reference external" href="http://www.rallydev.com/documents/scrumprimer.pdf"&gt;http://www.rallydev.com/documents/scrumprimer.pdf&lt;/a&gt;.&lt;/p&gt;
+</content></entry><entry><title>Subverting Vista UAC With a Service</title><link href="http://bryanprice.net/subverting-vista-uac-with-a-service.html" rel="alternate"></link><published>2009-08-17T20:19:00-05:00</published><updated>2009-08-17T20:19:00-05:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2009-08-17:/subverting-vista-uac-with-a-service.html</id><summary type="html">&lt;p&gt;This is exactly what I was looking for, it took me forever to find it.
+And so here it is: code to subvert vista uac with a service!
+&lt;a class="reference external" href="http://www.codeproject.com/KB/vista-security/SubvertingVistaUAC.aspx?display=Print"&gt;http://www.codeproject.com/KB/vista-security/SubvertingVistaUAC.aspx?display=Print&lt;/a&gt;.
+Please thank me later for giving you a link to this.&amp;nbsp; I …&lt;/p&gt;</summary><content type="html">&lt;p&gt;This is exactly what I was looking for, it took me forever to find it.
+And so here it is: code to subvert vista uac with a service!
+&lt;a class="reference external" href="http://www.codeproject.com/KB/vista-security/SubvertingVistaUAC.aspx?display=Print"&gt;http://www.codeproject.com/KB/vista-security/SubvertingVistaUAC.aspx?display=Print&lt;/a&gt;.
+Please thank me later for giving you a link to this.&amp;nbsp; I needed this to
+be able to lock the keyboard and mouse in my CCS project on standard
+user accounts on vista.&amp;nbsp; The only thing.&amp;nbsp; I could have used this code a
+week ago and saved myself a lot of coding.&lt;/p&gt;
+&lt;p&gt;UPDATE: The Code does not work for XP, so you still have to find ways to
+make it work for both.&amp;nbsp; So the design I made before is still a good way
+to do things.&amp;nbsp; I just need to use this for the keyboard and mouse
+blocker.&lt;/p&gt;
+</content><category term="CCS"></category><category term="code"></category><category term="codeproject"></category><category term="service"></category><category term="uac"></category><category term="vista"></category></entry><entry><title>Gravatars</title><link href="http://bryanprice.net/gravatars.html" rel="alternate"></link><published>2009-06-11T11:16:00-05:00</published><updated>2009-06-11T11:16:00-05:00</updated><author><name>bryan</name></author><id>tag:bryanprice.net,2009-06-11:/gravatars.html</id><summary type="html">&lt;p&gt;Wow, I never knew about Gravatars until just now.&amp;nbsp; Everyone needs to go
+to Gravatar.com and register an avatar that can be used across the web
+on many websites (including this one).&amp;nbsp; The avatar is associated with
+your email address and if a website uses Gravatar it just checks …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Wow, I never knew about Gravatars until just now.&amp;nbsp; Everyone needs to go
+to Gravatar.com and register an avatar that can be used across the web
+on many websites (including this one).&amp;nbsp; The avatar is associated with
+your email address and if a website uses Gravatar it just checks to see
+if you have one setup on Gravatar.com.&amp;nbsp; If you look at comments on this
+site you will now see avatars.&amp;nbsp; This is a really amazing idea!&lt;/p&gt;
+&lt;p&gt;Now if you have a wordpress blog and you want to incorporate Gravatars
+into your template, I suggest you use this line of code in your comment
+template.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;&amp;lt;?php&lt;/span&gt;
+  &lt;span class="k"&gt;echo&lt;/span&gt; &lt;span class="nx"&gt;get_avatar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="nv"&gt;$id_or_email&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nv"&gt;$size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;96&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nv"&gt;$default&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;&amp;lt;path_to_url&amp;gt;&amp;#39;&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="cp"&gt;?&amp;gt;&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Replace $id_or_email with $comment (this is what I used) or with
+get_the_author_id() (it varies from theme to theme), replace XX with
+the size you want the images (I use 50 pixels), and replace
+'&amp;lt;path_to_url&amp;gt;' with the absolute location of a custom default avatar
+(in the case that the commenter didn't have a gravatar set).&amp;nbsp; If you
+want to use the default avatar set in the Wordpress settings
+(Settings-&amp;gt;Discussion) you need to remove the default argument
+completely.&lt;/p&gt;
+&lt;p&gt;Hope this was educational, and remember to sign up for a Gravatar!&lt;/p&gt;
+</content><category term="avatar"></category><category term="webaccount"></category><category term="blogging"></category></entry></feed>
